@@ -87,3 +87,6 @@ typings/
 
 # Electron-Forge
 out/
+
+backres/onepiece_demo.mp4_out_frames/
+backres/onepiece_demo.mp4_tmp_frames/
