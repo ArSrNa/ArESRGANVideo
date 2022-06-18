@@ -43,8 +43,11 @@
         <div class="card-body">
           <p class="card-text">
             第一步：在<strong>文件输入处</strong>上传文件
-        <br>第二步：点击<strong>转化为帧</strong>，将视频每一帧转化为单帧图片（该过程自动计算帧率）
-        <br>第三步：单击<strong>处理</strong>开始处理文件
+        <br>第二步：点击<strong>转化为帧</strong>，将视频每一帧转化为单帧图片
+        <br>第三步：单击<strong>处理</strong>开始处理文件，将每一帧进行增强处理（该过程较慢，提供中途退出功能）
+        <br>第四步：单击<strong>帧转化为视频</strong>将所有帧合成为视频（该过程较慢，提供中途退出功能）
+        <hr>
+        <div class="alert alert-primary">当然也可以使用一键启动功能，软件会自动完成逻辑，该功能预计下个月开发</div>
           </p>
         </div>
       </div>
@@ -74,7 +77,7 @@
              <br>分别用于<strong>视频帧转换</strong>与<strong>视频帧处理</strong>
             </div>
 
-            <div class="alert alert-info" role="alert" id="stdout">日志</div>
+            <div class="alert alert-info" role="alert" id="ffmpegstdout">日志</div>
             <hr>
            
 
@@ -108,20 +111,23 @@
 
 <hr>
       <div class="card">
-        <div class="card-header">处理操作</div>
-        <div class="card-body">
-          
-          <div class="input-group">
+        <div class="card-header lead">处理操作</div>
+        <div class="card-body row">
+          <div class="col">
+            <div class="card-header">视频帧增强</div>
+            <div class="lead totalFrame">当前存在 0 帧需要处理</div>
+            <div class="input-group">
               <label class="input-group-text" for="model">选择模型</label>
               <select class="form-select" id="model">
                 <!-- <option selected>请选择</option> -->
-                <option value="2,RealESRGANv2-animevideo-xsx2" selected>animevideo-xsx2（2x放大）</option>
-                <option value="4,RealESRGANv2-animevideo-xsx4">animevideo-xsx2（4x放大）</option>
+                <option value="2,realesr-animevideov3-x2" selected>realesr-animevideov3（2x放大）</option>
+                <option value="2,realesr-animevideov3-x3">realesr-animevideov3（3x放大）</option>
+                <option value="4,realesr-animevideov3-x4">realesr-animevideov3（4x放大）</option>
               </select>
             </div>
 
           <div class="d-grid gap-2">
-            <button class="btn btn-success" onclick="process.opt()" id="processStart">处理</button>
+            <button class="btn btn-success disabled" onclick="process.opt()" id="processStart">处理</button>
             </div>
             <div class="alert alert-warning" role="alert">
               请仔细检查所有配置以及文件内容
@@ -139,6 +145,35 @@
           <div class="progress">
             <div class="progress-bar" role="progressbar" style="width: 0%;" id="progress">0%</div>
           </div>
+          </div>
+
+          <div class="col">
+            <div class="card-header">帧合成为视频</div>
+            <div class="lead totalFrame">当前存在 0 帧需要处理</div>
+            <div class="input-group">
+              <span class="input-group-text">编码器</span>
+              <input type="text" id="codec" class="form-control" value="libx264">
+            </div>
+            <div class="alert alert-warning" role="alert">
+              建议直接使用默认值，最好不要修改，如果需要显卡加速的，建议先去搜索自己显卡加速对应的 ffmpeg 编码器
+            </div>
+
+            <hr>
+            <div class="d-grid gap-2">
+              <button class="btn btn-success disabled" onclick="process.toVideo()" id="tvProcessStart">处理</button>
+              </div>
+              <div class="alert alert-warning" role="alert">
+                必须先对帧进行增强处理才能开始，就在上一部分，不然你按下去100%闪退，不信就试试，请仔细检查所有配置以及文件内容
+              </div>
+          
+              <div class="d-grid gap-2">
+              <button class="btn btn-danger disabled" onclick="toVideoWs.send(JSON.stringify({command:'exit'}))" id="tvProcessStop">终止</button>
+            </div>
+              <div class="alert alert-danger" role="alert">
+                按下后将会强行干掉子进程，请悉知
+              </div>
+              <div class="alert alert-info" role="alert" id="toVidstdout">日志在此处</div>
+          </div>
         </div>
       </div>
     
@@ -147,22 +182,80 @@
         <div class="card-header">输出</div>
       <div class="card-body">
       <div class="row">
-      <div class="col-6">
-        <img class="img-fluid" src="backres/onepiece_demo.mp4_tmp_frames/1.jpg" id="frameView">
+      <div class="col-6 text-center" id="procBef">
+        <img class="img-fluid" src="backres/onepiece_demo.mp4_tmp_frames/1.jpg" id="frameView" alt="请先转换为帧再查看">
+        <br>
+        <button class="btn btn-primary previewFrame" onclick="$('#frameView').toggle()" disabled>处理前帧预览</button>
     </div>
     
-    <div class="col-6">
-      <img id="process" class="img-fluid arimg" src="input.jpg_optimization.png" alt="待处理">
+    <div class="col-6 text-center" id="procAft">
+      <img id="frameViewAft" class="img-fluid arimg" src="input.jpg_optimization.png" alt="请先处理再查看">
       <br>
-      <p class="line-limit-length"><a id="aftLink" href="input.jpg_optimization.png" target="_blank">处理后</a></p>
+      <button class="btn btn-primary previewFrame" onclick="$('#frameViewAft').toggle()" disabled>处理后帧预览</button>
     </div>
     <label for="frameControl" class="form-label" id="frameStat">帧号控制器</label>
-            <input type="range" class="form-range" step="1" value="1" min="1" id="frameControl" oninput="frameControl(this)">
+            <input type="range" class="form-range" step="1" value="1" min="1" max="1" id="frameControl" oninput="frameControl(this)">
     </div>
 </div>
 </div>
 
       <hr>
+
+<div class="card">
+  <div class="card-header">清理工具</div>
+  <div class="card-body">
+<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteOutFrames">
+  删除原始帧
+</button>
+
+<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteOptFrames">
+  删除处理帧
+</button>
+
+<div class="modal fade" id="DeleteOutFrames" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="DeleteOutFramesLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="DeleteOutFramesLabel">是否删除原始帧？</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        一旦删除将不可恢复，请悉知
+        <br>该操作将会删除由原视频抽取出来的帧图片文件夹
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" onclick="Delete.out()">删除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="DeleteOptFrames" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="DeleteOptFramesLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="DeleteOptFramesLabel">是否删除处理帧？</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        一旦删除将不可恢复，请悉知
+        <br>该操作将会删除由原始帧增强后的帧图片文件夹
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" onclick="Delete.opt()">删除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  </div>
+</div>
+
+<hr>
 
       <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#copyright">
@@ -194,6 +287,7 @@
       </div>
       <div class="modal-body">
         <p>本软件源模型来自Real-ESRGAN：https://github.com/xinntao/Real-ESRGAN，并遵循 BSD 3-Clause License 公共许可协议
+          <br>本软件视频处理来自FFMPEG：https://ffmpeg.org/，并遵循 GPL 公共许可协议，License可前往：https://ffmpeg.org/legal.html 查看
           <br>本软件UI来自Bootstrap：https://github.com/twbs/bootstrap，并遵守MIT协议
           <br>框架来自electron及其附属代码：https://github.com/electron/electron，并遵循MIT许可协议
           <br>前后端传输来自Socket.io与express，并遵守其原开源许可协议
@@ -251,13 +345,12 @@
   </div>
 </div>   
 
-
-
-      <hr>
+<hr><div style="height: 60px;"></div>
 </body>
 <script>
   $(document).ready(function(){
-    checkUpdate()
+    checkUpdate();
+    logicalHide();
   })
 </script>
 <script src="https://www.arsrna.cn/footer.js"></script>

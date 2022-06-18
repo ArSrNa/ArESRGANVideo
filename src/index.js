@@ -1,9 +1,19 @@
+/* 2022-6-17
+   Powered by Ar-Sr-Na
+              ArSrNaRenderInfinity
+              ArSrNaESRGAN
+   该部分为后端js，负责接收前端传送指令给所有依赖
+   以及子程序
+   相当于处理器
+   开发日期：2022-6-17
+*/
+exports.fixPathForAsarUnpack = path => exports.isUsingAsar ? path.replace('app.asar', 'app.asar.unpacked') : path;
 const { app, BrowserWindow} = require('electron'),
       path = require('path'),
       eapp = require('express')(),
       expressWs = require('express-ws')
       mediainfo = require('node-mediainfo'),
-      elecreload = require('electron-reload'),
+      // elecreload = require('electron-reload'),
       spawn = require('child_process').spawn;
       fs=require('fs');
       port = 3003;
@@ -15,14 +25,6 @@ expressWs(eapp)
 // elecreload( path.resolve('.') , {
 //   electron: require(`${ path.resolve('.') }/node_modules/electron`)
 // });
-
-/* 2022-6-17
-   Powered by Ar-Sr-Na
-              ArSrNaRenderInfinity
-              ArSrNaESRGAN
-
-    Hope you enjoy it!!
-*/
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 // eslint-disable-next-line global-require
@@ -44,7 +46,7 @@ const createWindow = () => {
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
@@ -104,6 +106,23 @@ eapp.ws('/optimization',function(ws,req){
   })
 })
 
+eapp.ws('/toVideo',function(ws,req){
+  ws.on('message',(data)=>{
+    var res = JSON.parse(data);
+    console.log(data)
+    toVideo(ws,res,
+      ['-r',res.frameRate,
+      '-i',`${res.path}_out_frames\\%0d.jpg`,
+      '-i',res.path,
+      '-map','0:v:0',
+      '-map','1:a:0',
+      '-c:a','copy',
+      '-vcodec',res.codec,
+      '-pix_fmt','yuv420p',
+      `${res.path}_enhanced.mp4`,'-y'])
+  })
+})
+
 function toFrame(ws,res,args){
   if(res.command) {
     fs.mkdir(`${res.path}_tmp_frames/`,function(err){
@@ -133,7 +152,8 @@ function toFrame(ws,res,args){
       console.log('child process eixt ,exit:' + code); 
       ws.send(JSON.stringify({
         type:'exit',
-        data:'FFMPEG程序已退出'
+        data:'exit'+code,
+        exit:true
       }))
       return code
       })
@@ -171,27 +191,98 @@ function optimization(ws,res,args) {
     console.log('child process eixt ,exit:' + code); 
     ws.send(JSON.stringify({
       type:'exit',
-      data:code
+      data:'exit'+code,
+      exit:true
     }))
     return code
     })
 
 
   }else if(res.command=='exit'){
-    killProcess()
+    killEsrgan()
     console.log('Force Exit')
   }
 }
 
+function toVideo(ws,res,args) {
+  if(res.command==true) {
+  tovid=spawn(`${__dirname}/backres/ffmpeg.exe`,args)
+    console.log('执行命令合成视频')
+  
+  tovid.stdout.on('data', function (data) { 
+    console.log(data.toString('utf8'))
+    ws.send(JSON.stringify({
+      type:'stdout',
+      data:data.toString('utf8')
+    }))
+  }); 
+
+  tovid.stderr.on('data', function (data) { 
+    console.log(data.toString('utf8'))
+    ws.send(JSON.stringify({
+      type:'stderr',
+      data:data.toString('utf8')
+    }))
+  })
+
+  tovid.on('exit', function (code, signal) { 
+    console.log('child process eixt ,exit:' + code); 
+    ws.send(JSON.stringify({
+      type:'exit',
+      data:'exit'+code,
+      exit:true
+    }))
+    return code
+    })
 
 
-function killProcess() {
+  }else if(res.command=='exit'){
+    killToVideo();
+    console.log('Force Exit');
+  }
+}
+
+
+function killEsrgan() {
   esgan.kill('SIGINT');
   console.log('killed');
   //res.send('exitnull')
 }
-// mediainfo('F:\\ArSrNaSystems\\video-enhance\\src\\backres\\onepiece_demo.mp4').then(result=>{
-//   console.log(JSON.stringify(result));
-// })
+
+function killToVideo() {
+  tovid.kill('SIGINT');
+  console.log('killed');
+  //res.send('exitnull')
+}
+
+
+eapp.ws('/delete',(ws,req)=>{
+  ws.on('message',(data)=>{
+    var res = JSON.parse(data)
+    if(res.delete==true) {
+      deleteDir(res.content)
+    }
+  })
+})
+
+function deleteDir(url){
+  console.log('delete: '+url)
+  var files = [];
+  if( fs.existsSync(url) ) {  //判断给定的路径是否存在
+      files = fs.readdirSync(url);   //返回文件和子目录的数组
+      files.forEach(function(file,index){
+          var curPath = path.join(url,file);
+          if(fs.statSync(curPath).isDirectory()) { //同步读取文件夹文件，如果是文件夹，则函数回调
+              deleteDir(curPath);
+          } else {    
+              fs.unlinkSync(curPath);    //是指定文件，则删除
+          }  
+      });
+      fs.rmdirSync(url); //清除文件夹
+  }else{
+      console.log("给定的路径不存在！");
+  }
+}
+
 
 eapp.listen(port)

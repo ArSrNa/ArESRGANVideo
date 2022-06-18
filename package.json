@@ -8,9 +8,10 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
+    "asar": "asar pack ./outputs/ArSrNaESRGANVideo-win32-x64/resources/app app.asar",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",
-    "build": "electron-packager ./ ArSrNaESRGANVideo --win --arch=x64 --out ./out --electron-zip-dir=./ --icon=./icon.ico --overwrite"
+    "build": "electron-packager ./ ArSrNaESRGANVideo --win --ignore test/ --ignore electron-v19.0.4-win32-x64.zip --arch=x64 --out ./out --electron-zip-dir=./ --icon=./icon.ico --overwrite"
   },
   "keywords": [],
   "author": {
@@ -20,7 +21,9 @@
   "license": "MIT",
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+        "extraResources":"./src/backres/"
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",

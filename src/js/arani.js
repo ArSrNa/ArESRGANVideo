@@ -1,10 +1,51 @@
-var port = 3003;
-var toFrameWs=new WebSocket(`ws://localhost:${port}/toFrame`)
-var optWs=new WebSocket(`ws://localhost:${port}/optimization`)
+/* Powered by Ar-Sr-Na ArSrNaRenderInfinity
+   该部分为前端js，负责接收后端消息以及反馈前端
+   相当于桥梁
+   开发日期：2022-6-17
+*/
+
+var port = 3003,
+    adress = 'localhost';
+var toFrameWs=new WebSocket(`ws://${adress}:${port}/toFrame`),
+    optWs=new WebSocket(`ws://${adress}:${port}/optimization`),
+    toVideoWs=new WebSocket(`ws://${adress}:${port}/toVideo`),
+    delWs=new WebSocket(`ws://${adress}:${port}/delete`);
+
+
+function logicalHide(){
+  var query=['#frameView','#frameViewAft'];
+  for(var i=0;i<query.length;i++){
+    $(query[i]).hide()
+  }
+}
+
 
 toFrameWs.onmessage = function(data){
   console.log(data.data)
-  $('#stdout').html(JSON.parse(data.data).data)
+  var res = JSON.parse(data.data).data
+  $('#ffmpegstdout').html(res)
+  if(res=='exit0'){
+    $('ffmpegstdout').html('任务已完成')
+    $('#procBef').show()
+    //$('#frameControl').removeAttr('disabled')
+  }
+}
+
+toVideoWs.onmessage = function(data) {
+  console.log(data.data);
+  var res = JSON.parse(data.data);
+  $('#toVidstdout').html(res.data)
+  if(res.data=='exit0'){
+    $('toVidstdout').html('任务已完成')
+    $('#procAft').show();
+    $('#tvProcessStart').removeClass('disabled');
+    $('#tvProcessStop').addClass('disabled');
+    //$('#frameControl').removeAttr('disabled')
+  }
+  if(res.exit==true){
+    $('#tvProcessStart').removeClass('disabled');
+    $('#tvProcessStop').addClass('disabled');
+  }
 }
 
 
@@ -15,7 +56,7 @@ optWs.onmessage = function (data) {
   $('#progress').css('width',res.data)
   $('#progress').html(res.data)
 
-  if(res.data=='null'){
+  if(res.data=='exit0'){
     $('#processStop').addClass('disabled')
     $('#processStart').removeClass('disabled')
     $('#processStart').html(`处理`)
@@ -27,7 +68,7 @@ optWs.onmessage = function (data) {
     $('.ar-line').hide()
      }
 
-  if(data.data=='1'){
+  if(data.data=='exit1'){
       arProgressing('arLoading','人为退出','fa-exclamation-triangle')
       $('.ar-line').hide()
       $('#processStop').attr('disabled','')
@@ -47,6 +88,9 @@ function getMedia() {
     $('#toFrame').removeAttr('disabled')
     $('#fileName').html(file.files[0].name)
     $('#video').attr('src',file.files[0].path)
+    $('.previewFrame').removeAttr('disabled')
+    $('#tvProcessStart').removeClass('disabled');
+    $('#processStart').removeClass('disabled');
   console.log(file.files[0].name)
   $.ajax({
     url:`http://localhost:${port}/getMedia`,
@@ -63,6 +107,7 @@ function getMedia() {
       $('#vidShortInfo').html(temp)
       window.VideoMediaInfo=msg
       $('#frameControl').attr('max',data.FrameCount)
+      $('.totalFrame').html(`当前存在 ${data.FrameCount} 帧需要处理`)
     }
   })
   }else{
@@ -80,8 +125,6 @@ var process={
   },
 
   opt:function(){
-    $('#processStop').removeAttr('disabled')
-    $('#processStart').attr('disabled','')
     arProgressing('arLoading','处理中','fa-info-circle')
     $('#processStop').removeClass('disabled')
     $('#processStart').addClass('disabled')
@@ -92,6 +135,18 @@ var process={
       model:$('#model').val().split(',')[1],
       scale:$('#model').val().split(',')[0],
       path:$('#filePathText').html()
+    }))
+  },
+
+  toVideo:function(){
+    $('#tvProcessStop').removeClass('disabled');
+    $('#tvProcessStart').addClass('disabled');
+
+    toVideoWs.send(JSON.stringify({
+      command:true,
+      frameRate:VideoMediaInfo.media.track[1].FrameRate,
+      path:$('#filePathText').html(),
+      codec:$('#codec').val(),
     }))
   }
 
@@ -108,18 +163,27 @@ var process={
 }
 
 function frameControl(range) {
-  $('#frameView').attr('src',`${$('#filePathText').html()}_tmp_frames/${range.value}.jpg`);
-  $('#process').attr('src',`${$('#filePathText').html()}_out_frames/${range.value}.jpg`);
+  if($('#frameView').is(':visible')) $('#frameView').attr('src',`${$('#filePathText').html()}_tmp_frames/${range.value}.jpg`);
+  if($('#frameViewAft').is(':visible')) $('#frameViewAft').attr('src',`${$('#filePathText').html()}_out_frames/${range.value}.jpg`);
   $('#frameStat').html(`帧号控制器：${range.value}`)
 }
 
 
+var Delete={
+  out(){
+    delWs.send(JSON.stringify({delete:true,content:`${$('#filePathText').html()}_tmp_frames`}));
+  },
+  opt(){
+    delWs.send(JSON.stringify({delete:true,content:`${$('#filePathText').html()}_out_frames`}));
+  }
+}
+
 
 
 function checkUpdate(){
-  var count=3;
+  var count=1;
   $.ajax({
-    url:"https://api.arsrna.cn/release/appUpdate/ArESRGAN",
+    url:"https://api.arsrna.cn/release/appUpdate/ArESRGANVid",
     dataType:'json',
     success(msg){
       console.log(msg)
