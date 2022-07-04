@@ -117,7 +117,7 @@ eapp.ws('/toVideo',function(ws,req){
       '-map','0:v:0',
       '-map','1:a:0',
       '-c:a','copy',
-      '-vcodec',res.codec,
+      '-vcodec',res.codec,//libx264
       '-pix_fmt','yuv420p',
       `${res.path}_enhanced.mp4`,'-y'])
   })

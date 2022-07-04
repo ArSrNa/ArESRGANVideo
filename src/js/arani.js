@@ -56,6 +56,11 @@ optWs.onmessage = function (data) {
   $('#progress').css('width',res.data)
   $('#progress').html(res.data)
 
+  if(res.type=='exit'){
+    $('#processStop').addClass('disabled')
+    $('#processStart').removeClass('disabled')
+    $('#processStart').html(`处理`)
+  }
   if(res.data=='exit0'){
     $('#processStop').addClass('disabled')
     $('#processStart').removeClass('disabled')
@@ -68,7 +73,7 @@ optWs.onmessage = function (data) {
     $('.ar-line').hide()
      }
 
-  if(data.data=='exit1'){
+  if(data.data=='exitnull'){
       arProgressing('arLoading','人为退出','fa-exclamation-triangle')
       $('.ar-line').hide()
       $('#processStop').attr('disabled','')
