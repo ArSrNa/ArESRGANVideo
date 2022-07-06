@@ -4,14 +4,21 @@
    开发日期：2022-6-17
 */
 
-var port = 3003,
-    adress = 'localhost';
-var toFrameWs=new WebSocket(`ws://${adress}:${port}/toFrame`),
-    optWs=new WebSocket(`ws://${adress}:${port}/optimization`),
-    toVideoWs=new WebSocket(`ws://${adress}:${port}/toVideo`),
-    delWs=new WebSocket(`ws://${adress}:${port}/delete`);
+    port = 3003,
+    address = 'localhost';
 
 
+ window.addEventListener("scroll", function(e) {
+  bgOpacity()
+   });
+
+   function relativeHeight(id){
+     var progress=document.getElementById(id).getBoundingClientRect().top/$(window).height()
+     if(progress>=1) var progress=1;
+     if(progress<=0) var progress=0;
+     return(progress)
+ }
+    
 function logicalHide(){
   var query=['#frameView','#frameViewAft'];
   for(var i=0;i<query.length;i++){
@@ -21,12 +28,15 @@ function logicalHide(){
 
 
 toFrameWs.onmessage = function(data){
-  console.log(data.data)
-  var res = JSON.parse(data.data).data
-  $('#ffmpegstdout').html(res)
+  console.log(data.data);
+  var res = JSON.parse(data.data).data;
+  $('#ffmpegstdout').html(res);
+  $('#autoLogs').html(res.data);
+  $('#autoStep1').css('color','red');
   if(res=='exit0'){
     $('ffmpegstdout').html('任务已完成')
     $('#procBef').show()
+    $('#autoStep1').css('color','green');
     //$('#frameControl').removeAttr('disabled')
   }
 }
@@ -34,12 +44,16 @@ toFrameWs.onmessage = function(data){
 toVideoWs.onmessage = function(data) {
   console.log(data.data);
   var res = JSON.parse(data.data);
-  $('#toVidstdout').html(res.data)
+  $('#toVidstdout').html(res.data);
+  $('#autoLogs').html(res.data);
+  $('#autoStep3').css('color','red');
   if(res.data=='exit0'){
     $('toVidstdout').html('任务已完成')
     $('#procAft').show();
     $('#tvProcessStart').removeClass('disabled');
     $('#tvProcessStop').addClass('disabled');
+
+    $('#autoStep3').css('color','green');
     //$('#frameControl').removeAttr('disabled')
   }
   if(res.exit==true){
@@ -51,6 +65,8 @@ toVideoWs.onmessage = function(data) {
 
 optWs.onmessage = function (data) {
   var res = JSON.parse(data.data);
+  $('#autoLogs').html(res.data);
+  $('#autoStep2').css('color','red');
  // console.log(data);
   $('h5').html(`处理中：${res.data}`);
   $('#progress').css('width',res.data);
@@ -60,7 +76,9 @@ optWs.onmessage = function (data) {
     $('#processStop').addClass('disabled');
     $('#processStart').removeClass('disabled');
     $('#processStart').html(`处理`);
-    return('处理完成');
+
+    $('#autoLogs').html(res.data);
+    $('#autoStep2').css('color','green');
   }
   if(res.data=='exit0'){
     $('#processStop').addClass('disabled');
@@ -72,7 +90,7 @@ optWs.onmessage = function (data) {
     $('#progress').css('width','100%');
     $('#progress').html(`处理完成`);
     $('.ar-line').hide();
-    return('处理完成');
+
      }
 
   if(data.data=='exitnull'){
@@ -109,6 +127,7 @@ function getMedia() {
     success(msg){
       $('#videoInfoJson').html(JSON.stringify(msg, null, '  '))
       var data=msg.media.track[1]
+      $('#fSize').html(`处理预计需要：${(data.FrameCount/400).toFixed(2)}GB`)
       var temp=`帧率：${data.FrameRate}
             <br>总帧数 ${data.FrameCount}
             <br> 分辨率 ${data.Width}*${data.Height}
@@ -127,6 +146,7 @@ function getMedia() {
 
 var process={
   toFrame:function(){
+    toFrameWs=new WebSocket(`ws://${address}:${port}/toFrame`),
     toFrameWs.send(JSON.stringify({
       command:true,
       path:$('#filePathText').html()
@@ -134,6 +154,7 @@ var process={
   },
 
   opt:function(){
+    optWs=new WebSocket(`ws://${address}:${port}/optimization`),
     arProgressing('arLoading','处理中','fa-info-circle')
     $('#processStop').removeClass('disabled')
     $('#processStart').addClass('disabled')
@@ -148,6 +169,7 @@ var process={
   },
 
   toVideo:function(){
+    toVideoWs=new WebSocket(`ws://${address}:${port}/toVideo`),
     $('#tvProcessStop').removeClass('disabled');
     $('#tvProcessStart').addClass('disabled');
 
@@ -177,7 +199,7 @@ function frameControl(range) {
   $('#frameStat').html(`帧号控制器：${range.value}`)
 }
 
-
+delWs=new WebSocket(`ws://${address}:${port}/delete`);
 var Delete={
   out(){
     delWs.send(JSON.stringify({delete:true,content:`${$('#filePathText').html()}_tmp_frames`}));
@@ -190,7 +212,7 @@ var Delete={
 
 
 function checkUpdate(){
-  var count=1;
+  var count=2;
   $.ajax({
     url:"https://api.arsrna.cn/release/appUpdate/ArESRGANVid",
     dataType:'json',
@@ -221,11 +243,48 @@ function checkUpdate(){
 
 }
 
-function linkStart(){
-  var myModal = new bootstrap.Modal(document.getElementById('linkStart'),{focus:true});
 
+function bgOpacity(){
+  //console.log(relativeHeight('bottom-spy'))
+  if(relativeHeight('bottom-spy')>=0.4){
+    $('.backgroundImg').css('opacity',0.5);
+  }else{
+    $('.backgroundImg').css('opacity',1);
+  }
 }
 
-function photoAAA(){
-  $('.backgroundImg').css('opacity',1)
+function changeBg(url){
+  $('#bgFilePath').html(url)
+  $.ajax({
+    url:`http://localhost:${port}/saveProfile`,
+    data:{
+      type:'bg',
+      data:{        
+        url:$('#bgFilePath').html(),
+        bgOpen:$('#bgSwitch')[0].checked
+      }
+    },
+    success(msg){
+      layer.msg(msg);
+      location.reload()
+    }
+  })
+}
+
+function startChangeBg(){
+  $.ajax({
+    url:'profile/profilebg.json',
+    dataType:'json',
+    success(msg){
+      console.log(msg)
+      if(msg.bgOpen=='false'){
+        $('.backgroundImg').remove()
+        $('#bgSwitch')[0].checked = false;
+        $('#bgFilePath').html(msg.url);
+      }
+      $('#bgFilePath').html(msg.url);
+      $('.backgroundImg').attr('src',msg.url);
+      $('#bgSwitch')[0].checked = true;
+    }
+  })
 }

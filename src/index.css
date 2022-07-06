@@ -23,15 +23,14 @@ body{
   white-space: nowrap;
   }
   .backgroundImg{
+    /* transition: all .5s; */
     margin-top: calc(-1*var(--padding));
     z-index: -9999;
     position: fixed;
-    min-width: auto;
-    width: 100%;
+    height: 100vh;
+    min-width: 100vw;
     object-fit: cover;
-    overflow: hidden;
     opacity: 0.5;
-    filter: blur(0px);
     background-color: white;
   }
   .mainContainer{

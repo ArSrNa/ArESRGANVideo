@@ -13,9 +13,9 @@
 <script src="./js/arani.js"></script>
 <script src="res/layer/layer.js"></script>
 <script src="./js/arloading.js"></script>
+<script src="./js/auto.js"></script>
 
-
-<div style="display: flex; justify-content: center;">
+<div style="display: flex; justify-content: center;overflow: hidden;">
 <img src="res/index.jpg" class="backgroundImg">
 </div>
   </head>
@@ -29,7 +29,10 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">ESRGAN 视频版</a>
+              <a class="nav-link active" href="#">ESRGAN 视频版</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#bottom-spy">换图</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="javascript:checkUpdate()">检查更新<span class="badge bg-danger checkUpdate">新版本</span></a>
@@ -44,12 +47,11 @@
         <div class="card-header lead">使用说明</div>
         <div class="card-body">
           <p class="card-text">
-            第一步：在<strong>文件输入处</strong>上传文件
+            第一步：在<strong>文件输入处</strong>上传文件，确认硬盘是否有足够的空间进行处理
         <br>第二步：点击<strong>转化为帧</strong>，将视频每一帧转化为单帧图片
         <br>第三步：单击<strong>处理</strong>开始处理文件，将每一帧进行增强处理（该过程较慢，提供中途退出功能）
         <br>第四步：单击<strong>帧转化为视频</strong>将所有帧合成为视频（该过程较慢，提供中途退出功能）
         <hr>
-        <div class="alert alert-primary">当然也可以使用一键启动功能，软件会自动完成逻辑，该功能预计下个月开发</div>
           </p>
         </div>
       </div>
@@ -69,12 +71,47 @@
              $('#filePathText').html(this.files[0].path)"
             accept="video/*"
             >
-            <p class="lead" id="filePathText">F:\ArSrNaSystems\video-enhance\src\backres\onepiece_demo.mp4</p>
-            
+            <p class="text-muted" id="filePathText">F:\ArSrNaSystems\video-enhance\test\1.mp4</p>
+            <p class="lead" id="fSize">处理预计需要：3.2GB</p>
           <hr>
-                 
+          
+          <div class="d-grid gap-2">
+            <a class="btn btn-primary" href="#AutoHandle" data-bs-toggle="collapse" data-bs-target="#AutoHandle">
+              <i class="bi bi-hand-index"></i>一键处理</a>
+            <a class="btn btn-success" href="#selfHandle" data-bs-toggle="collapse" data-bs-target="#selfHandle">
+              <i class="bi bi-code-slash"></i>手动处理</a>
+          </div>
+          <hr>
+          <div class="collapse card" id="AutoHandle">
+            <div class="card-header">一键处理注意事项</div>
+            <div class="card-body">
+               确认好文件和文件属性，即可开始
+               <div class="d-grid gap-2">
+                <button class="btn btn-success" onclick="linkStart()">
+                  开始</button>
+               </div>
+              
+ 
+               <div class="d-flex align-items-center" id="autoStep1">
+                <div>视频转化为帧</div>
+                <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+              </div>
+              <br>
+              <div class="d-flex align-items-center" id="autoStep2">
+                <div>增强视频帧</div>
+                <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+              </div>
+              <br>
+              <div class="d-flex align-items-center" id="autoStep3">
+                <div>帧合成为视频</div>
+                <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+              </div>
+              <hr>
+              <div class="alert alert-info" role="alert" id="autoLogs">日志</div>
 
 
+            </div>
+          </div>
         </div>
 
       </div>
@@ -106,7 +143,8 @@
       </div>
 
 <hr>
-      <div class="card">
+
+      <div class="collapse card" id="selfHandle">
         <div class="card-header lead">处理操作</div>
         <div class="card-body row">
           <div class="col-lg-6">
@@ -361,9 +399,41 @@
 
 <hr>
 
-<button type="button" class="btn btn-primary" onclick="photoAAA()">
-  点这个按钮，查看高清大图
-</button>
+<div id="bottom-spy"></div>
+<div class="position-sticky text-center display-4">
+  下滑看好看的
+  <i class="bi bi-arrow-bar-down"></i>
+</div>
+<div class="d-grid gap-2">
+  <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#changeBg">
+    换图
+  </button>
+</div>
+
+
+<div class="modal fade" id="changeBg" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="changeBgLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="changeBgLabel">选择一张图片</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="file" class="form-control" accept="image/*" id="bgFile">
+        <div class="text-muted" id="bgFilePath"></div>
+        <input class="form-check-input" type="checkbox" value="" id="bgSwitch">
+  <label class="form-check-label" for="bgSwitch">
+    是否开启背景
+  </label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" 
+        onclick="changeBg($('#bgFile')[0].files[0].path);" data-bs-dismiss="changeBg">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 </body>
@@ -371,6 +441,7 @@
   $(document).ready(function(){
     checkUpdate();
     logicalHide();
+    startChangeBg();
   })
 </script>
 <!-- <script src="https://www.arsrna.cn/footer.js"></script> -->

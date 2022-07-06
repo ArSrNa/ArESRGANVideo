@@ -13,7 +13,7 @@ const { app, BrowserWindow} = require('electron'),
       eapp = require('express')(),
       expressWs = require('express-ws')
       mediainfo = require('node-mediainfo'),
-      elecreload = require('electron-reload'),
+      // elecreload = require('electron-reload'),
       spawn = require('child_process').spawn;
       fs=require('fs');
       port = 3003;
@@ -21,10 +21,10 @@ const { app, BrowserWindow} = require('electron'),
 expressWs(eapp);
 
 
-elecreload(__dirname);
- elecreload( path.resolve('.') , {
-   electron: require(`${ path.resolve('.') }/node_modules/electron`)
- });
+// elecreload(__dirname);
+//  elecreload( path.resolve('.') , {
+//    electron: require(`${ path.resolve('.') }/node_modules/electron`)
+//  });
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 // eslint-disable-next-line global-require
@@ -286,11 +286,11 @@ function deleteDir(url){
 
 eapp.get('/saveProfile',function(req,res){
   console.log(req.query)
-  fs.writeFile(path.join(__dirname, `./profile.json`),JSON.stringify(req.query),err=>{
+  fs.writeFile(path.join(__dirname, `./profile/profile${req.query.type}.json`),JSON.stringify(req.query.data),err=>{
     if(err){
-      res.send('配置文件保存错误 '+err);
+      res.send(req.query.type+'配置文件保存错误 '+err);
     }
-    res.send('成功保存配置');
+    res.send(`成功保存${req.query.type}配置`);
   })
 })
 
