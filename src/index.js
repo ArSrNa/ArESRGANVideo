@@ -1,11 +1,11 @@
-/* 2022-6-17
+/* 2022-4-6
    Powered by Ar-Sr-Na
               ArSrNaRenderInfinity
               ArSrNaESRGAN
    该部分为后端js，负责接收前端传送指令给所有依赖
    以及子程序
    相当于处理器
-   开发日期：2022-6-17
+   开发日期：2022-4-6
 */
 exports.fixPathForAsarUnpack = path => exports.isUsingAsar ? path.replace('app.asar', 'app.asar.unpacked') : path;
 const { app, BrowserWindow} = require('electron'),
@@ -13,18 +13,18 @@ const { app, BrowserWindow} = require('electron'),
       eapp = require('express')(),
       expressWs = require('express-ws')
       mediainfo = require('node-mediainfo'),
-      // elecreload = require('electron-reload'),
+      elecreload = require('electron-reload'),
       spawn = require('child_process').spawn;
       fs=require('fs');
       port = 3003;
 
-expressWs(eapp)
+expressWs(eapp);
 
 
-//elecreload(__dirname);
-// elecreload( path.resolve('.') , {
-//   electron: require(`${ path.resolve('.') }/node_modules/electron`)
-// });
+elecreload(__dirname);
+ elecreload( path.resolve('.') , {
+   electron: require(`${ path.resolve('.') }/node_modules/electron`)
+ });
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 // eslint-disable-next-line global-require
@@ -283,6 +283,16 @@ function deleteDir(url){
       console.log("给定的路径不存在！");
   }
 }
+
+eapp.get('/saveProfile',function(req,res){
+  console.log(req.query)
+  fs.writeFile(path.join(__dirname, `./profile.json`),JSON.stringify(req.query),err=>{
+    if(err){
+      res.send('配置文件保存错误 '+err);
+    }
+    res.send('成功保存配置');
+  })
+})
 
 
 eapp.listen(port)

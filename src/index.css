@@ -1,3 +1,11 @@
+:root{
+  --padding:70px
+}
+body{
+  padding-top: var(--padding);
+  min-height: 60vh;
+  padding-bottom: 100vh;
+}
 .arimg{
   max-height: 20vh;
   max-height: 50vh;
@@ -13,4 +21,23 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  }
+  .backgroundImg{
+    margin-top: calc(-1*var(--padding));
+    z-index: -9999;
+    position: fixed;
+    min-width: auto;
+    width: 100%;
+    object-fit: cover;
+    overflow: hidden;
+    opacity: 0.5;
+    filter: blur(0px);
+    background-color: white;
+  }
+  .mainContainer{
+    height: 100vh;
+  }
+  .card {
+    backdrop-filter: saturate(2) blur(10px);
+    -webkit-backdrop-filter: saturate(2) blur(10px);
   }

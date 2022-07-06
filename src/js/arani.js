@@ -52,38 +52,42 @@ toVideoWs.onmessage = function(data) {
 optWs.onmessage = function (data) {
   var res = JSON.parse(data.data);
  // console.log(data);
-  $('h5').html(`处理中：${res.data}`)
-  $('#progress').css('width',res.data)
-  $('#progress').html(res.data)
-
+  $('h5').html(`处理中：${res.data}`);
+  $('#progress').css('width',res.data);
+  $('#progress').html(res.data);
+  
   if(res.type=='exit'){
-    $('#processStop').addClass('disabled')
-    $('#processStart').removeClass('disabled')
-    $('#processStart').html(`处理`)
+    $('#processStop').addClass('disabled');
+    $('#processStart').removeClass('disabled');
+    $('#processStart').html(`处理`);
+    return('处理完成');
   }
   if(res.data=='exit0'){
-    $('#processStop').addClass('disabled')
-    $('#processStart').removeClass('disabled')
-    $('#processStart').html(`处理`)
+    $('#processStop').addClass('disabled');
+    $('#processStart').removeClass('disabled');
+    $('#processStart').html(`处理`);
     //进程退出操作
     //正常退出
-    arProgressing('arLoading','处理完成','fa-check-circle')
-    $('#progress').css('width','100%')
-    $('#progress').html(`处理完成`)
-    $('.ar-line').hide()
+    arProgressing('arLoading','处理完成','fa-check-circle');
+    $('#progress').css('width','100%');
+    $('#progress').html(`处理完成`);
+    $('.ar-line').hide();
+    return('处理完成');
      }
 
   if(data.data=='exitnull'){
-      arProgressing('arLoading','人为退出','fa-exclamation-triangle')
-      $('.ar-line').hide()
-      $('#processStop').attr('disabled','')
-    $('#processStart').removeAttr('disabled')
-    $('#processStart').html(`处理`)
+      arProgressing('arLoading','人为退出','fa-exclamation-triangle');
+      $('.ar-line').hide();
+      $('#processStop').attr('disabled','');
+    $('#processStart').removeAttr('disabled');
+    $('#processStart').html(`处理`);
+    return('处理完成，人为退出');
   }
 };
 
 function paused(){
   ws.send(JSON.stringify({kill:true}))
+  return('停止成功');
 }
 
 
@@ -217,3 +221,11 @@ function checkUpdate(){
 
 }
 
+function linkStart(){
+  var myModal = new bootstrap.Modal(document.getElementById('linkStart'),{focus:true});
+
+}
+
+function photoAAA(){
+  $('.backgroundImg').css('opacity',1)
+}

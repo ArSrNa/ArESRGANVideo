@@ -4,20 +4,22 @@
     <meta charset="UTF-8" />
     <title>RealESRGAN | 视频增强 | Ar-Sr-Na</title>
 <script src="res/jquery.min.js"></script>
-<link rel="stylesheet" href="res/bootstrap.min.css">
+<link rel="stylesheet" href="res/bootstrap-ar.css">
     <script src="res/bootstrap.bundle.min.js"></script>
     <script src="res/json2html.min.js"></script>
-<link rel="stylesheet" href="res/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <link href="res/armain.css" rel="stylesheet">
 <link href="index.css" rel="stylesheet">
 <script src="./js/arani.js"></script>
 <script src="res/layer/layer.js"></script>
 <script src="./js/arloading.js"></script>
-<script src="https://unpkg.com/mediainfo.js/dist/mediainfo.min.js" ></script> 
 
 
+<div style="display: flex; justify-content: center;">
+<img src="res/index.jpg" class="backgroundImg">
+</div>
   </head>
-  <body style="padding-top: 70px;min-height: 60vh;">  
+  <body>  
     <nav class="navbar navbar-expand-lg navbar-light fixed-top nav-blur" style="height: 60px;">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">Ar-Sr-Na</a>
@@ -52,34 +54,25 @@
         </div>
       </div>
       <hr>
+
+
+
       <div class="row">
-        <div class="col-lg-6">
-          
-          
+        <div class="col-lg-6">          
           <div class="card">
-            <div class="card-header">文件输入与参数设置</div>
+            <div class="card-header">文件输入与检查配置</div>
             <div class="card-body">
             
              <input type="file" class="form-control" id="inputFile" 
              oninput="
              getMedia();
              $('#filePathText').html(this.files[0].path)"
-            accept="mp4,mkv,m4v,flv"
+            accept="video/*"
             >
             <p class="lead" id="filePathText">F:\ArSrNaSystems\video-enhance\src\backres\onepiece_demo.mp4</p>
             
           <hr>
-          <div class="d-grid gap-2">
-            <button class="btn btn-success" onclick="process.toFrame()" id="toFrame" disabled>转化为帧</button>
-            </div>
-            <div class="alert alert-danger" role="alert">
-             该操作将会在原视频目录下生成文件夹 <strong>输入文件名_tmp</strong> 与 <strong>输入文件名_out</strong>
-             <br>分别用于<strong>视频帧转换</strong>与<strong>视频帧处理</strong>
-            </div>
-
-            <div class="alert alert-info" role="alert" id="ffmpegstdout">日志</div>
-            <hr>
-           
+                 
 
 
         </div>
@@ -87,6 +80,9 @@
       </div>
 
         </div>
+
+
+
 <div class="col-lg-6">
 <div class="card">
   <div class="card-header">视频参数与预览</div>
@@ -113,8 +109,25 @@
       <div class="card">
         <div class="card-header lead">处理操作</div>
         <div class="card-body row">
-          <div class="col">
-            <div class="card-header">视频帧增强</div>
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-header">第一步:转换为帧</div>
+              <div class="card-body">
+                <div class="d-grid gap-1">
+                  <button class="btn btn-success" onclick="process.toFrame()" id="toFrame" disabled>转化为帧</button>
+                  </div>
+                  <div class="alert alert-danger" role="alert">
+                   该操作将会在原视频目录下生成文件夹 <strong>输入文件名_tmp</strong> 与 <strong>输入文件名_out</strong>
+                   <br>分别用于<strong>视频帧转换</strong>与<strong>视频帧处理</strong>
+                  </div>
+      
+                  <div class="alert alert-info" role="alert" id="ffmpegstdout">日志</div>
+                  <hr>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card-header">第二步：视频帧增强</div>
             <div class="lead totalFrame">当前存在 0 帧需要处理</div>
             <div class="input-group">
               <label class="input-group-text" for="model">选择模型</label>
@@ -139,16 +152,15 @@
             <div class="alert alert-danger" role="alert">
               按下后将会强行干掉子进程，请悉知
             </div>
-        
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" style="width: 0%;" id="progress">0%</div>
+            </div>
         <div class="arLoading"></div>
           <hr>
-          <div class="progress">
-            <div class="progress-bar" role="progressbar" style="width: 0%;" id="progress">0%</div>
-          </div>
           </div>
 
-          <div class="col">
-            <div class="card-header">帧合成为视频</div>
+          <div class="col-lg-12">
+            <div class="card-header">第三步：帧合成为视频</div>
             <div class="lead totalFrame">当前存在 0 帧需要处理</div>
             <div class="input-group">
               <span class="input-group-text">编码器</span>
@@ -174,6 +186,7 @@
               </div>
               <div class="alert alert-info" role="alert" id="toVidstdout">日志在此处</div>
           </div>
+
         </div>
       </div>
     
@@ -321,6 +334,7 @@
     </div>
   </div>
 </div>
+</div>
 
 <div class="modal fade" id="updateLog" tabindex="-1" aria-labelledby="updateLog" aria-hidden="true">
   <div class="modal-dialog">
@@ -345,7 +359,13 @@
   </div>
 </div>   
 
-<hr><div style="height: 60px;"></div>
+<hr>
+
+<button type="button" class="btn btn-primary" onclick="photoAAA()">
+  点这个按钮，查看高清大图
+</button>
+
+
 </body>
 <script>
   $(document).ready(function(){
@@ -353,5 +373,5 @@
     logicalHide();
   })
 </script>
-<script src="https://www.arsrna.cn/footer.js"></script>
+<!-- <script src="https://www.arsrna.cn/footer.js"></script> -->
 </html>
