@@ -1,4 +1,4 @@
-/* 2022-4-6
+/* 2022-7-7
    Powered by Ar-Sr-Na
               ArSrNaRenderInfinity
               ArSrNaESRGAN
@@ -7,7 +7,6 @@
    相当于处理器
    开发日期：2022-4-6
 */
-exports.fixPathForAsarUnpack = path => exports.isUsingAsar ? path.replace( 'app.asar', 'app.asar.unpacked' ) : path;
 const {
 	app,
 	BrowserWindow

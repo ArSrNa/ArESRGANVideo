@@ -1,8 +1,8 @@
 {
   "name": "video-enhance",
   "productName": "ArSrNaESRGAN-Video",
-  "version": "0.0.1",
-  "description": "My Electron application description",
+  "version": "2.0.0",
+  "description": "Powered by Ar-Sr-Na",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
@@ -11,18 +11,53 @@
     "asar": "asar pack ./outputs/ArSrNaESRGANVideo-win32-x64/resources/app app.asar",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",
-    "build": "electron-packager ./ ArSrNaESRGANVideo --win --ignore test/ --ignore electron-v19.0.4-win32-x64.zip --arch=x64 --out ./out --electron-zip-dir=./ --icon=./icon.ico --overwrite"
+    "pack": "electron-builder --dir",
+    "build": "electron-packager ./ ArSrNaESRGANVideo --win --ignore test --ignore electron-v19.0.4-win32-x64.zip --arch=x64 --out ./out --electron-zip-dir=./ --icon=./icon.ico --overwrite --extra-resources"
   },
   "keywords": [],
   "author": {
     "name": "Ar-Sr-Na",
     "email": "root@arsrna.cn"
   },
-  "license": "MIT",
+  "build": {
+    "productName": "ArSrNaESRGANVideo",
+    "appId": "arsrnaesrganvid",
+    "directories": {
+      "output": "build"
+    },
+    "win": {
+      "icon": "./icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": "ia32"
+        }
+      ],
+      "asarUnpack": [
+        "text/*",
+        "electron-v19.0.4-win32-x64.zip"
+      ],
+      "nsis": {
+        "oneClick": false,
+        "allowElevation": true,
+        "allowToChangeInstallationDirectory": true,
+        "installerIcon": "./icon.ico",
+        "uninstallerIcon": "./icon.ico",
+        "installerHeaderIcon": "./icon.ico",
+        "createDesktopShortcut": true,
+        "createStartMenuShortcut": true,
+        "shortcutName": "ArSrNaESRGAN视频版"
+      },
+      "electronDownload": {
+        "mirror": "https://npmmirror.com/mirrors/electron/"
+      }
+    }
+  },
+  "license": "GPL 3.0",
   "config": {
     "forge": {
       "packagerConfig": {
-        "extraResources":"./src/backres/"
+        "extraResources": "./src/backres/"
       },
       "makers": [
         {

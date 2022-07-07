@@ -372,7 +372,7 @@
               </button>
             </div>
             <div class="modal-body">
-              <input type="file" class="form-control" accept="image/*" id="bgFile">
+              <input type="file" class="form-control" accept="image/*" id="bgFile" oninput="$('#bgFilePath').html(this.files[0].path)">
               <div class="text-muted" id="bgFilePath">
               </div>
               <input class="form-check-input" type="checkbox" id="bgSwitch">
