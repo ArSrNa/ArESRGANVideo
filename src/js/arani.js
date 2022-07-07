@@ -7,17 +7,19 @@
     port = 3003,
     address = 'localhost';
 
+$(document).ready(()=>{
+  window.addEventListener("scroll", function(e) {
+    bgOpacity()
+     });
+})
+ 
 
- window.addEventListener("scroll", function(e) {
-  bgOpacity()
-   });
-
-   function relativeHeight(id){
-     var progress=document.getElementById(id).getBoundingClientRect().top/$(window).height()
-     if(progress>=1) var progress=1;
-     if(progress<=0) var progress=0;
-     return(progress)
- }
+function relativeHeight(id){
+    var progress=document.getElementById(id).getBoundingClientRect().top/$(window).height()
+    if(progress>=1) var progress=1;
+    if(progress<=0) var progress=0;
+    return(progress);
+}
     
 function logicalHide(){
   var query=['#frameView','#frameViewAft'];
@@ -25,6 +27,10 @@ function logicalHide(){
     $(query[i]).hide()
   }
 }
+
+toFrameWs=new WebSocket(`ws://${address}:${port}/toFrame`);
+optWs=new WebSocket(`ws://${address}:${port}/optimization`);
+toVideoWs=new WebSocket(`ws://${address}:${port}/toVideo`);
 
 
 toFrameWs.onmessage = function(data){
@@ -112,10 +118,12 @@ function paused(){
 function getMedia() {
   var file = $('#inputFile')[0];
   if(!!($('#inputFile')[0].files[0])){
-    $('#toFrame').removeAttr('disabled')
-    $('#fileName').html(file.files[0].name)
-    $('#video').attr('src',file.files[0].path)
-    $('.previewFrame').removeAttr('disabled')
+    $('#toFrame').removeAttr('disabled');
+    $('.SelfHandleBtn').removeClass('disabled');
+    $('.AutoHandleBtn').removeClass('disabled');
+    $('#fileName').html(file.files[0].name);
+    $('#video').attr('src',file.files[0].path);
+    $('.previewFrame').removeAttr('disabled');
     $('#tvProcessStart').removeClass('disabled');
     $('#processStart').removeClass('disabled');
   console.log(file.files[0].name)
@@ -133,7 +141,7 @@ function getMedia() {
             <br> 分辨率 ${data.Width}*${data.Height}
             <br> ${data.ColorSpace} / ${data.BitDepth}bit(${data.ChromaSubsampling})`
       $('#vidShortInfo').html(temp)
-      window.VideoMediaInfo=msg
+      VideoMediaInfo=msg
       $('#frameControl').attr('max',data.FrameCount)
       $('.totalFrame').html(`当前存在 ${data.FrameCount} 帧需要处理`)
     }
@@ -146,7 +154,6 @@ function getMedia() {
 
 var process={
   toFrame:function(){
-    toFrameWs=new WebSocket(`ws://${address}:${port}/toFrame`),
     toFrameWs.send(JSON.stringify({
       command:true,
       path:$('#filePathText').html()
@@ -154,7 +161,6 @@ var process={
   },
 
   opt:function(){
-    optWs=new WebSocket(`ws://${address}:${port}/optimization`),
     arProgressing('arLoading','处理中','fa-info-circle')
     $('#processStop').removeClass('disabled')
     $('#processStart').addClass('disabled')
@@ -169,7 +175,6 @@ var process={
   },
 
   toVideo:function(){
-    toVideoWs=new WebSocket(`ws://${address}:${port}/toVideo`),
     $('#tvProcessStop').removeClass('disabled');
     $('#tvProcessStart').addClass('disabled');
 
@@ -246,10 +251,10 @@ function checkUpdate(){
 
 function bgOpacity(){
   //console.log(relativeHeight('bottom-spy'))
-  if(relativeHeight('bottom-spy')>=0.4){
-    $('.backgroundImg').css('opacity',0.5);
-  }else{
+  if(relativeHeight('bottom-spy')==0){
     $('.backgroundImg').css('opacity',1);
+  }else{
+   $('.backgroundImg').css('opacity',0.5);
   }
 }
 

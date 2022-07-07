@@ -1,5 +1,5 @@
 :root{
-  --padding:70px
+  --padding:70px 
 }
 body{
   padding-top: var(--padding);
@@ -12,31 +12,31 @@ body{
   width: auto;
 }
 #befLink,#aftLink {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
 .line-limit-length {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  }
-  .backgroundImg{
-    /* transition: all .5s; */
-    margin-top: calc(-1*var(--padding));
-    z-index: -9999;
-    position: fixed;
-    height: 100vh;
-    min-width: 100vw;
-    object-fit: cover;
-    opacity: 0.5;
-    background-color: white;
-  }
-  .mainContainer{
-    height: 100vh;
-  }
-  .card {
-    backdrop-filter: saturate(2) blur(10px);
-    -webkit-backdrop-filter: saturate(2) blur(10px);
-  }
+}
+.backgroundImg{
+ /* transition: opacity .5s;
+  */
+  margin-top: calc(-1*var(--padding));
+  z-index: -9999;
+  position: fixed;
+  height: 100vh;
+  min-width: 100vw;
+  object-fit: cover;
+  opacity: 0.5;
+  background-color: white;
+}
+.mainContainer{
+  height: 100vh;
+}
+.card {
+  backdrop-filter: saturate(2) blur(10px);
+  -webkit-backdrop-filter: saturate(2) blur(10px);
+}
