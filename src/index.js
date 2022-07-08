@@ -1,4 +1,4 @@
-/* 2022-7-7
+/* 2022-7-8
    Powered by Ar-Sr-Na
               ArSrNaRenderInfinity
               ArSrNaESRGAN
@@ -7,27 +7,67 @@
    相当于处理器
    开发日期：2022-4-6
 */
-const {
-	app,
-	BrowserWindow
-} = require( 'electron' ),
+const {	app,BrowserWindow } = require( 'electron' ),
 	path = require( 'path' ),
 	eapp = require( 'express' )(),
-	expressWs = require( 'express-ws' )
-mediainfo = require( 'node-mediainfo' ),
+	expressWs = require( 'express-ws' ),
+    mediainfo = require( 'node-mediainfo' ),
 	// elecreload = require('electron-reload'),
-	spawn = require( 'child_process' )
-	.spawn;
-fs = require( 'fs' );
+    COS = require('cos-nodejs-sdk-v5'),
+	request = require('request'),
+	spawn = require( 'child_process' ).spawn;
+    fs = require( 'fs' );
+
 port = 3003;
 
 expressWs( eapp );
-
 
 // elecreload(__dirname);
 //  elecreload( path.resolve('.') , {
 //    electron: require(`${ path.resolve('.') }/node_modules/electron`)
 //  });
+var bucket='app-release',
+	APPID=1257609559,
+	region='ap-guangzhou';
+
+var cos = new COS({
+    getAuthorization: function (options,callback) {
+        // 异步获取临时密钥
+        request({
+            url: 'https://api.arsrna.cn/release/coskey',
+            qs: {
+				bucket:bucket,
+				APPID:APPID,
+				region:region
+            }
+        }, function (err, response, body) {
+			console.log(body)
+            try {
+                var data = JSON.parse(body);
+                var credentials = data.credentials;
+            } catch(e) {}
+            if (!data || !credentials) return console.error('credentials invalid');
+            callback({
+                TmpSecretId: credentials.tmpSecretId,        // 临时密钥的 tmpSecretId
+                TmpSecretKey: credentials.tmpSecretKey,      // 临时密钥的 tmpSecretKey
+                SecurityToken: credentials.sessionToken, // 临时密钥的 sessionToken
+                ExpiredTime: data.expiredTime,               // 临时密钥失效时间戳，是申请临时密钥时，时间戳加 durationSeconds
+            });
+        });
+    }
+});
+
+function downCos(key,path){
+	cos.getObject({
+		Bucket: `${bucket}-${APPID}`, /* 填入您自己的存储桶，必须字段 */
+		Region: region,  /* 存储桶所在地域，例如ap-beijing，必须字段 */
+		Key: key,  /* 存储在桶里的对象键（例如1.jpg，a/b/test.txt），必须字段 */
+		Output: path,
+	}, function(err, data) {
+		console.log(err || data);
+	});
+}
+
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 // eslint-disable-next-line global-require
@@ -300,6 +340,10 @@ eapp.get( '/saveProfile', function( req, res ) {
 		res.send( `成功保存${req.query.type}配置` );
 	} )
 } )
+
+eapp.get('/hotUpdate',function(req,res){
+	downCos('app.asar',path.join(__dirname).replace('app\\src',''))
+})
 
 
 eapp.listen( port )
