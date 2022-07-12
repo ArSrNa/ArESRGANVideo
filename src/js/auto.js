@@ -15,10 +15,10 @@ var AutoProcess = {
 	opt: function() {
 		atoptWs.send(JSON.stringify({
 			command: true,
-			model: $('#model')
+			model: $('#AutoModel')
 				.val()
 				.split(',')[1],
-			scale: $('#model')
+			scale: $('#AutoModel')
 				.val()
 				.split(',')[0],
 			path: $('#filePathText')

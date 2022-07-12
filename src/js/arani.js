@@ -161,9 +161,9 @@ var process={
   },
 
   opt:function(){
-    arProgressing('arLoading','处理中','fa-info-circle')
-    $('#processStop').removeClass('disabled')
-    $('#processStart').addClass('disabled')
+    arProgressing('arLoading','处理中','fa-info-circle');
+    $('#processStop').removeClass('disabled');
+    $('#processStart').addClass('disabled');
     $('#processStart').html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>处理中`)
   
     optWs.send(JSON.stringify({

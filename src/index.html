@@ -115,7 +115,15 @@
       <hr>
       <div class="collapse card" id="AutoHandle">
         <div class="card-header">一键处理注意事项</div>
-        <div class="card-body">确认好文件和文件属性，即可开始
+        <div class="card-body">确认好文件和参数，即可开始
+          <div class="input-group">
+            <label class="input-group-text" for="AutoModel">选择模型</label>
+            <select class="form-select" id="AutoModel">
+              <option value="2,realesr-animevideov3-x2" selected>realesr-animevideov3（2x放大）</option>
+              <option value="2,realesr-animevideov3-x3">realesr-animevideov3（3x放大）</option>
+              <option value="4,realesr-animevideov3-x4">realesr-animevideov3（4x放大）</option>
+            </select>
+          </div>
           <div class="row">
             <div class="d-grid col">
               <button class="btn btn-success" onclick="linkStart()" id="autoStart">开始</button>
@@ -222,12 +230,12 @@
         <div class="card-body">
           <div class="row">
             <div class="col-6 text-center" id="procBef">
-              <img class="img-fluid" src="backres/onepiece_demo.mp4_tmp_frames/1.jpg" id="frameView" alt="请先转换为帧再查看">
+              <img class="img-fluid" src="res/index.jpg" id="frameView" alt="请先转换为帧再查看">
               <br>
               <button class="btn btn-primary previewFrame" onclick="$('#frameView').toggle()" disabled>处理前帧预览</button>
             </div>
             <div class="col-6 text-center" id="procAft">
-              <img id="frameViewAft" class="img-fluid arimg" src="input.jpg_optimization.png" alt="请先处理再查看">
+              <img id="frameViewAft" class="img-fluid arimg" src="res/index.jpg" alt="请先处理再查看">
               <br>
               <button class="btn btn-primary previewFrame" onclick="$('#frameViewAft').toggle()" disabled>处理后帧预览</button>
             </div>

@@ -6,6 +6,7 @@
    以及子程序
    相当于处理器
    开发日期：2022-4-6
+   希儿老婆天下第一！！！
 */
 const {	app,BrowserWindow } = require( 'electron' ),
 	path = require( 'path' ),
@@ -253,7 +254,7 @@ function optimization( ws, res, args ) {
 function toVideo( ws, res, args ) {
 	if ( res.command == true ) {
 		tovid = spawn( `${__dirname}/backres/ffmpeg.exe`, args )
-		console.log( '执行命令合成视频' )
+		console.log( '执行命令合成视频' );
 
 		tovid.stdout.on( 'data', function( data ) {
 			console.log( data.toString( 'utf8' ) )
@@ -327,7 +328,7 @@ function deleteDir( url ) {
 		} );
 		fs.rmdirSync( url ); //清除文件夹
 	} else {
-		console.log( "给定的路径不存在！" );
+		console.log( "给定的路径不存在!" );
 	}
 }
 
