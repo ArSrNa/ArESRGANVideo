@@ -217,7 +217,7 @@ var Delete={
 
 
 function checkUpdate(){
-  var count=2;
+  var count=3;
   $.ajax({
     url:"https://api.arsrna.cn/release/appUpdate/ArESRGANVid",
     dataType:'json',

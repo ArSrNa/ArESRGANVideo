@@ -2,7 +2,6 @@ var attoFrameWs = new WebSocket(`ws://localhost:${port}/toFrame`),
 	atoptWs = new WebSocket(`ws://localhost:${port}/optimization`),
 	attoVideoWs = new WebSocket(`ws://localhost:${port}/toVideo`);
 
-
 var AutoProcess = {
 	toFrame: function() {
 		attoFrameWs.send(JSON.stringify({
@@ -51,11 +50,13 @@ function autoProgress(data, pstep, stepName) {
 	//console.log(res);
 	step = 'toFrame';
 	if (res.type == 'exit') {
-		console.log(`已退出step${pstep}`)
-		$(`#autoStep${pstep}`)
-			.css('color', 'green');
-		$(`#autoStep${pstep}`)
-			.html(`结束 ${stepName}`);
+		console.log(`已退出step${pstep}`);
+		$(`#autoStep${pstep}`).css('color', 'green');
+		$(`#autoStep${pstep}`).html(`结束 ${stepName}`);
+
+		$('#autoPause').removeClass('disabled');
+	    $('#autoStart').addClass('disabled');
+
 		return true;
 	}
 }
