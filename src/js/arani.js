@@ -13,6 +13,15 @@ $(document).ready(()=>{
      });
 })
  
+function browse(url){
+  $.ajax({
+    url:`http://${address}:${port}/openURL`,
+    data:{url:url},
+    success(msg){
+      layer.msg(msg);
+    }
+  })
+}
 
 function relativeHeight(id){
     var progress=document.getElementById(id).getBoundingClientRect().top/$(window).height()
@@ -217,7 +226,7 @@ var Delete={
 
 
 function checkUpdate(){
-  var count=3;
+  var count=4;
   $.ajax({
     url:"https://api.arsrna.cn/release/appUpdate/ArESRGANVid",
     dataType:'json',
@@ -231,7 +240,7 @@ function checkUpdate(){
          content: `更新日期：${msg.uTime} <br>${msg.content}`,
          btn:['前往下载','取消'],
          yes: function(index, layero){
-           location.href=msg.link;
+           browse(msg.link)
          }
        });         
       }else{
@@ -247,6 +256,8 @@ function checkUpdate(){
   })
 
 }
+
+
 
 
 function bgOpacity(){

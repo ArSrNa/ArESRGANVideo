@@ -18,8 +18,9 @@ const {
 	// elecreload = require('electron-reload'),
 	// COS = require('cos-nodejs-sdk-v5'),
 	// request = require('request'),
-	spawn = require('child_process')
-	.spawn;
+	child_process = require('child_process');
+	spawn = child_process.spawn,
+	exec = child_process.exec;
 fs = require('fs');
 
 /*此处在debug有效，请勿生产时使用！
@@ -370,6 +371,20 @@ eapp.get('/hotUpdate', function(req, res) {
 		.replace('app\\src', ''))
 })
 
+
+eapp.get('/openURL',(req,res)=>{
+	switch (process.platform) {
+		case "darwin":
+		  exec(`open ${req.query.url}`);
+		  break;
+		case "win32":
+			exec(`start ${req.query.url}`);
+		  break;
+		default:
+		  exec('xdg-open', [url]);
+	  }
+	res.send('success');
+  })
 
 
 eapp.listen(port);

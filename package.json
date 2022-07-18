@@ -1,7 +1,7 @@
 {
   "name": "video-enhance",
   "productName": "ArSrNaESRGAN-Video",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Powered by Ar-Sr-Na",
   "main": "src/index.js",
   "scripts": {
@@ -40,7 +40,8 @@
       }
     ],
     "files": [
-      "!electron-v19.0.4-win32-x64.zip"
+      "!electron-v19.0.4-win32-x64.zip",
+      "!backres"
     ],
     "nsis": {
       "oneClick": false,
