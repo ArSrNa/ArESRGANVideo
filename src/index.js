@@ -20,8 +20,8 @@ const { app, BrowserWindow } = require("electron"),
 fs = require("fs");
 
 /*此处在debug有效，请勿生产时使用！
-ffmpegPath = path.join(__dirname,'../backres/ffmpeg.exe');
-esrganPath = path.join(__dirname,'../backres/realesrgan-ncnn-vulkan.exe');
+ffmpegPath = path.join(__dirname, "../backres/ffmpeg.exe");
+esrganPath = path.join(__dirname, "../backres/realesrgan-ncnn-vulkan.exe");
 */
 /*此处在production有效，请勿在开发时使用！*/
 ffmpegPath = path.join(
@@ -157,15 +157,12 @@ eapp.ws("/toFrame", function (ws, req) {
     toFrame(ws, res, [
       "-i",
       res.path,
-      "-qscale:v",
-      1,
-      "-qmin",
-      1,
-      "-vsync",
-      0,
+      "-vf",
+      res.colorMatrix,
       `${res.path}_tmp_frames/%0d.jpg`,
       "-loglevel",
       "info",
+      "-y",
     ]);
   });
 });
@@ -204,6 +201,8 @@ eapp.ws("/toVideo", function (ws, req) {
       "copy",
       "-vcodec",
       res.codec, //libx264
+      "-vf",
+      res.colorMatrix,
       `${res.path}_enhanced.mp4`,
       "-y",
     ]);

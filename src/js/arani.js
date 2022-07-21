@@ -166,6 +166,7 @@ var process = {
       JSON.stringify({
         command: true,
         path: $("#filePathText").html(),
+        colorMatrix: $("#ColorMatrix").val(),
       })
     );
   },
@@ -198,6 +199,7 @@ var process = {
         frameRate: VideoMediaInfo.media.track[1].FrameRate,
         path: $("#filePathText").html(),
         codec: $("#codec").val(),
+        colorMatrix: $("#ColorMatrix").val(),
       })
     );
   },
@@ -248,7 +250,7 @@ var Delete = {
 };
 
 function checkUpdate() {
-  var count = 5;
+  var count = 6;
   $.ajax({
     url: "https://api.arsrna.cn/release/appUpdate/ArESRGANVid",
     dataType: "json",
@@ -319,6 +321,7 @@ function startChangeBg() {
       $("#bgFilePath").html(msg.url);
       $(".backgroundImg").attr("src", msg.url);
       $("#bgSwitch")[0].checked = true;
+      $("#video").attr("poster", msg.url);
     },
   });
 }

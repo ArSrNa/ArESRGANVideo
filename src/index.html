@@ -11,7 +11,7 @@
     </script>
     <script src="res/json2html.min.js">
     </script>
-    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.8.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="res/font-awesome-4.7.0/css/font-awesome.css" rel="stylesheet">
     <link href="res/armain.css" rel="stylesheet">
     <link href="index.css" rel="stylesheet">
     <script src="./js/arani.js">
@@ -108,7 +108,7 @@
           <div class="card">
             <div class="card-header">视频预览</div>
             <div class="card-body">
-              <video src="res/onepiece_demo.mp4" class="img-fluid" controls id="video">
+              <video src="res/onepiece_demo.mp4" class="img-fluid" style="width: 100%;height: 100%;" controls id="video">
               </video>
               <p id="fileName" class="lead">res\onepiece_demo.mp4</p>
             </div>
@@ -159,6 +159,7 @@
         </div>
       </div>
       <hr>
+      <!--  -->
       <div class="collapse card" id="selfHandle">
         <div class="card-header lead">处理操作</div>
         <div class="card-body row">
@@ -176,13 +177,23 @@
                   <strong>视频帧转换</strong>与
                   <strong>视频帧处理</strong>
                 </div>
+                <div class="input-group">
+                  <label class="input-group-text" for="ColorMatrix">电平范围转换</label>
+                <select class="form-select" id="ColorMatrix">
+                  <option value="scale=in_color_matrix=bt709:out_color_matrix=bt601" selected>输出BT601（速度较慢，颜色较准，建议）</option>
+                  <option value="scale=iw:ih">按照FFMPEG默认设置（红色色系受影响，速度较快）</option>
+                </select>
+              </div>
+                <br>
                 <div class="alert alert-info" role="alert" id="ffmpegstdout">日志</div>
                 <hr>
               </div>
             </div>
           </div>
           <div class="col-lg-6">
+            <div class="card">
             <div class="card-header">第二步：视频帧增强</div>
+            <div class="card-body">
             <div class="lead totalFrame">当前存在 0 帧需要处理</div>
             <div class="input-group">
               <label class="input-group-text" for="model">选择模型</label>
@@ -207,8 +218,12 @@
             </div>
             <hr>
           </div>
+          </div>
+          </div>
           <div class="col-lg-12">
+            <div class="card">
             <div class="card-header">第三步：帧合成为视频</div>
+            <div class="card-body">
             <div class="lead totalFrame">当前存在 0 帧需要处理</div>
             <div class="input-group">
               <span class="input-group-text">编码器</span>
@@ -227,6 +242,8 @@
             <div class="alert alert-info" role="alert" id="toVidstdout">日志在此处</div>
           </div>
         </div>
+        </div>
+      </div>
       </div>
       <div class="card">
         <div class="card-header">输出</div>
@@ -251,8 +268,11 @@
       <div class="card">
         <div class="card-header">清理工具</div>
         <div class="card-body">
-          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteOutFrames">删除原始帧</button>
-          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteOptFrames">删除处理帧</button>
+          <div class="alert alert-danger">
+            由于系统权限以及用户反馈，暂时下架该功能，您可在视频文件路径下找到<b>视频名称_tmp_frames</b>文件夹和<b>视频名称_out_frames</b>
+          </div>
+          <button type="button" class="btn btn-danger disabled" data-bs-toggle="modal" data-bs-target="#DeleteOutFrames">删除原始帧</button>
+          <button type="button" class="btn btn-danger disabled" data-bs-toggle="modal" data-bs-target="#DeleteOptFrames">删除处理帧</button>
         </div>
       </div>
       <div class="modal fade" id="DeleteOutFrames" data-bs-keyboard="true" tabindex="1000" aria-labelledby="DeleteOutFramesLabel" aria-hidden="true">
@@ -365,8 +385,7 @@
       <hr>
       <div id="bottom-spy">
       </div>
-      <div class="position-sticky text-center display-4">下滑看好看的
-        <i class="bi bi-arrow-bar-down"></i>
+      <div class="position-sticky text-center display-4">下滑查看原图
       </div>
       <div class="d-grid gap-2">
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#changeBg">换图</button>
