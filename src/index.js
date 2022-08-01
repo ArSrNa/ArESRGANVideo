@@ -16,7 +16,8 @@ const { app, BrowserWindow } = require("electron"),
   // COS = require('cos-nodejs-sdk-v5'),
   // request = require('request'),
   child_process = require("child_process");
-(spawn = child_process.spawn), (exec = child_process.exec);
+(spawn = child_process.spawn),
+(exec = child_process.exec);
 fs = require("fs");
 
 /*此处在debug有效，请勿生产时使用！
@@ -404,6 +405,8 @@ eapp.get("/saveProfile", function (req, res) {
     }
   );
 });
+
+
 
 eapp.get("/hotUpdate", function (req, res) {
   return false;

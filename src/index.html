@@ -335,7 +335,7 @@
                 <br>本软件UI来自Bootstrap：https://github.com/twbs/bootstrap，并遵守MIT协议
                 <br>框架来自electron及其附属代码：https://github.com/electron/electron，并遵循MIT许可协议
                 <br>前后端传输来自Socket.io与express，并遵守其原开源许可协议
-                <br>本软件作者：Ar-Sr-Na（https://www.arsrna.cn）拥有修改与二次创作该作品的权利，并受法律保护</p>
+                <br>本软件作者：Ar-Sr-Na（https://www.arsrna.cn）拥有修改与二次创作该作品的权利，并受法律保护，同时，本软件图标（ArSrNa 高性能计算图标）拥有著作权作品登记：鲁作登字-2022-F-00782000</p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
@@ -402,12 +402,23 @@
               <input type="file" class="form-control" accept="image/*" id="bgFile" oninput="$('#bgFilePath').html(this.files[0].path)">
               <div class="text-muted" id="bgFilePath">
               </div>
-              <input class="form-check-input" type="checkbox" id="bgSwitch">
-              <label class="form-check-label" for="bgSwitch">开启背景</label>
+              <div class="row">
+                <div class="col-6">
+                  <input class="form-check-input" type="checkbox" id="bgSwitch" checked onchange="
+                  if(this.checked){$('#bgFile').removeAttr('readonly')}else{$('#bgFile').attr('readonly','')}">
+                  <label class="form-check-label" for="bgSwitch">开启背景</label>
+                </div>
+                <div class="col-6">
+                  <input class="form-check-input" type="checkbox" id="defaultBg" onchange="
+                  if(this.checked){$('#bgFile').attr('readonly','')}else{$('#bgFile').removeAttr('readonly')}">
+                  <label class="form-check-label" for="defaultBg">默认背景</label>
+                </div>
+              </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-              <button type="button" class="btn btn-primary" onclick="changeBg($('#bgFilePath').html());" data-bs-dismiss="changeBg">确定</button>
+              <button type="button" class="btn btn-primary" onclick="changeBg($('#bgFilePath').html(),$('#bgSwitch')[0].checked,$('#defaultBg')[0].checked);"
+              data-bs-dismiss="modal">确定</button>
             </div>
           </div>
         </div>

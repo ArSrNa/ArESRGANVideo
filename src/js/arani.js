@@ -250,7 +250,7 @@ var Delete = {
 };
 
 function checkUpdate() {
-  var count = 6;
+  var count = 7;
   $.ajax({
     url: "https://api.arsrna.cn/release/appUpdate/ArESRGANVid",
     dataType: "json",
@@ -274,7 +274,7 @@ function checkUpdate() {
     },
 
     error(msg) {
-      layer.msg(`检查失败 ${msg}`);
+      layer.msg(`检查失败 ${msg.responseText}`);
       console.log(msg.statusText);
     },
   });
@@ -289,39 +289,29 @@ function bgOpacity() {
   }
 }
 
-function changeBg(url) {
-  $("#bgFilePath").html(url);
-  $.ajax({
-    url: `http://localhost:${port}/saveProfile`,
-    data: {
-      type: "bg",
-      data: {
-        url: $("#bgFilePath").html(),
-        bgOpen: $("#bgSwitch")[0].checked,
-      },
-    },
-    success(msg) {
-      layer.msg(msg);
-      location.reload();
-    },
-  });
+function changeBg(url,select,defaultBg) {
+  if(defaultBg){
+    //选择默认背景时
+    $("#bgFilePath").html('res/index.png');
+    localStorage.setItem('backgroundURL','res/index.png');
+  }else{
+     $("#bgFilePath").html(url);
+     localStorage.setItem('backgroundURL',url);
+  }
+  localStorage.setItem('backgroundSwitch',select);
+  location.reload()
 }
 
 function startChangeBg() {
-  $.ajax({
-    url: "profile/profilebg.json",
-    dataType: "json",
-    success(msg) {
-      console.log(msg);
-      if (msg.bgOpen == "false") {
-        $(".backgroundImg").remove();
-        $("#bgSwitch")[0].checked = false;
-        $("#bgFilePath").html(msg.url);
-      }
-      $("#bgFilePath").html(msg.url);
-      $(".backgroundImg").attr("src", msg.url);
-      $("#bgSwitch")[0].checked = true;
-      $("#video").attr("poster", msg.url);
-    },
-  });
+  var url = localStorage.getItem('backgroundURL'),
+      open = localStorage.getItem('backgroundSwitch');
+      //背景设置部分
+  if(open=='true'){
+    $("#bgFilePath").html(url);
+    $("#bgSwitch")[0].checked = true;
+    $('.backgroundImg').attr('src',url)
+  }else{
+    $(".backgroundImg").remove();
+    $("#bgSwitch")[0].checked = false;
+  }
 }
