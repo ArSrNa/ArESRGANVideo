@@ -10,7 +10,7 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",
-    "builder": "electron-builder",
+    "builder": "electron-builder --win --x64 --win --ia32",
     "build": "electron-packager ./ ArSrNaESRGANVideo --win --ignore test --ignore resources --ignore electron-v19.0.4-win32-x64.zip --arch=x64 --out ./out --electron-zip-dir=./ --icon=./icon.ico --overwrite"
   },
   "keywords": [],
@@ -42,7 +42,10 @@
     ],
     "files": [
       "!electron-v19.0.4-win32-x64.zip",
-      "!backres"
+      "!backres",
+      "!test",
+      "!out",
+      "!build"
     ],
     "nsis": {
       "oneClick": false,
