@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8" />
+    <title>控制台 | 视频增强 | Ar-Sr-Na</title>
+    <script src="../res/jquery.min.js"></script>
+    <link rel="stylesheet" href="../res/bootstrap-ar.css">
+    <script src="../res/bootstrap.bundle.min.js"></script>
+    <script src="../res/json2html.min.js"></script>
+    <link href="../res/armain.css" rel="stylesheet">
+    <link href="index.css" rel="stylesheet">
+    <script src="../res/layer/layer.js"></script>
+    <script src="../js/echarts.min.js"></script>
+  </head>
+
+ <nav class="navbar navbar-expand-lg navbar-light fixed-top nav-blur" style="height: 60px;">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Ar-Sr-Na</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon">
+            </span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" href="#">ESRGAN 视频版 控制台</a>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link" href="https://support.qq.com/product/419220">问题反馈</a>
+              </li>
+            </ul>
+            <div class="d-flex">
+                <p class="serverIP lead me-2"></p>
+                <button class="btn btn-primary"  onclick="localStorage.removeItem('serverIP');location.reload()">重设服务器</button>
+              </div>
+          </div>
+          
+        </div>
+      </nav>
+      <div style="display: flex; justify-content: center;overflow: hidden;">
+        <img src="../res/index.png" class="backgroundImg">
+      </div>
+  <body style="padding-top:70px">
+   
+    <div class="container">
+        <div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">任务基础信息</div>
+            <div class="card-body">
+                <div class="row" id="taskBaseInfo">
+                    
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="row col-md-6 mb-3">
+        <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">任务阶段</div>
+            <div class="card-body">
+                <div class="row" id="taskStage">
+                    
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    </div>
+
+
+<div class="">
+    <div class="card">
+        <div class="card-header">计算机基本信息</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    CPU
+                    <div id="cpuUsage" style="width: auto;height: 300px;"></div>
+                </div>
+                <div class="col">
+                    内存
+                    <div id="memUsage" style="width: auto;height: 300px;"></div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+
+
+</div> 
+<hr>
+<div class="d-grid gap-2">
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#changeBg">换图</button>
+  </div>
+
+<div class="modal fade" id="changeBg" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="10" aria-labelledby="changeBgLabel">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="changeBgLabel">选择一张图片</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="text" class="form-control" placeholder="请输入图片URL，因浏览器原因暂不支持本地文件上传" id="bgFile" oninput="$('#bgFilePath').html(this.value)">
+          <div class="text-muted" id="bgFilePath">
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <input class="form-check-input" type="checkbox" id="bgSwitch" checked onchange="
+              if(this.checked){$('#bgFile').removeAttr('readonly')}else{$('#bgFile').attr('readonly','')}">
+              <label class="form-check-label" for="bgSwitch">开启背景</label>
+            </div>
+            <div class="col-6">
+              <input class="form-check-input" type="checkbox" id="defaultBg" onchange="
+              if(this.checked){$('#bgFile').attr('readonly','')}else{$('#bgFile').removeAttr('readonly')}">
+              <label class="form-check-label" for="defaultBg">默认背景</label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" onclick="changeBg($('#bgFilePath').html(),$('#bgSwitch')[0].checked,$('#defaultBg')[0].checked);"
+          data-bs-dismiss="modal">确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  </body>
+
+  </html>
+  <script src="index.js"></script>
+  <script>
+    $(document).ready(()=>{
+        startChangeBg()
+    })
+  </script>

@@ -5,7 +5,7 @@
    以及子程序
    相当于处理器
    开发日期：2022-4-6
-   希儿老婆天下第一！！！
+   爱莉希雅天下第一！！！
 */
 const { app, BrowserWindow } = require("electron"),
   path = require("path"),
@@ -15,10 +15,13 @@ const { app, BrowserWindow } = require("electron"),
   // elecreload = require('electron-reload'),
   // COS = require('cos-nodejs-sdk-v5'),
   // request = require('request'),
-  child_process = require("child_process");
-(spawn = child_process.spawn),
-(exec = child_process.exec);
-fs = require("fs");
+  child_process = require("child_process"),
+  osu = require('node-os-utils'),
+  os = require('os'),
+  fs = require("fs"),
+  chokidar = require('chokidar'),
+  diskinfo = require('diskinfo');
+  (spawn = child_process.spawn),(exec = child_process.exec);
 
 /*此处在debug有效，请勿生产时使用！
 ffmpegPath = path.join(__dirname, "../backres/ffmpeg.exe");
@@ -426,5 +429,47 @@ eapp.get("/openURL", (req, res) => {
   }
   res.send("success");
 });
+
+eapp.get('/taskBaseInfo',(req,res)=>{
+  res.send({
+    
+  })
+})
+
+eapp.get('/getInfo/cpu',function(req,res){
+  res.send(JSON.stringify(os.cpus()))
+  })
+  //CPU数量及型号只获取一次即可，不需要计时器
+  
+
+  eapp.ws('/getInfo/cpuUsage',function(ws,req){ 
+     //console.log('Ar-Sr-NaNF:CPUUsage_'+info);
+     setInterval(function(){
+      osu.cpu.usage().then(info => {
+          ws.send(JSON.stringify(info))
+          //console.log(info)
+      });
+    },2000);
+  })
+  //CPU占用，2s以上获取一次
+  
+  
+diskinfo.getDrives(function(err, drives) {
+  eapp.ws('/getInfo/disk',function(ws,req){
+    setInterval(function(){
+          ws.send(JSON.stringify(drives))
+    },10000);
+    })
+  })//磁盘使用情况，建议10s以上获取一次
+
+  
+  eapp.ws('/getInfo/mem',function(ws,req){
+    setInterval(function(){
+      osu.mem.info().then(info=>{
+          ws.send(JSON.stringify(info))
+      })
+    },2000);
+})//内存使用情况，建议2s以上获取一次
+    
 
 eapp.listen(port);
