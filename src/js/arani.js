@@ -4,7 +4,8 @@
    开发日期：2022-6-17
 */
 
-(port = 3003), (address = "localhost");
+port = 3003;
+address = "localhost";
 
 $(document).ready(() => {
   window.addEventListener("scroll", function (e) {
